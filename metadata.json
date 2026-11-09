@@ -1,0 +1,6 @@
+{
+  "name": "SupervisiDigital Master",
+  "description": "Sistem Manajemen Supervisi Akademik Terpadu untuk Kepala Sekolah, Pengawas Pendamping, dan Guru.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
