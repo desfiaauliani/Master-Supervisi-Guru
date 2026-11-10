@@ -180,7 +180,7 @@ function createSampleInst4(teacherId: string): Instrument4PascaObservasi {
       },
       {
         id: 'ub-4',
-        aspek: 'Asesmen & Umpan Balik',
+        aspek: '4. Asesmen Pembelajaran',
         kekuatan: 'Asesmen formatif berjalan natural sepanjang proses belajar menggunakan lembar observasi proses.',
         areaPengembangan: 'Melibatkan asesmen antar teman (peer-assessment) untuk mengasah empati dan evaluasi diri murid.',
       },

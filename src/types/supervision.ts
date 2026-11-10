@@ -146,7 +146,6 @@ export interface AppSupervisionData {
 
 export const INSTRUMEN_1_ITEMS: { id: number; nama: string; deskripsi: string }[] = [
   { id: 1, nama: 'Kalender Pendidikan', deskripsi: 'Kesesuaian dengan kalender pendidikan provinsi/sekolah dan alokasi pekan efektif' },
-  { id: 2, nama: 'Notulen Rapat Pembagian Tugas', deskripsi: 'Notulen rapat awal tahun ajaran dan surat keputusan pembagian beban mengajar' },
   { id: 3, nama: 'Program Tahunan (Prota)', deskripsi: 'Pemetaan materi esensial dan alokasi waktu tahunan sesuai struktur kurikulum' },
   { id: 4, nama: 'Pemanfaatan Hasil Asesmen Awal', deskripsi: 'Bukti dokumentasi diagnosis awal murid (kognitif/non-kognitif) sebagai dasar perencanaan' },
   { id: 5, nama: 'CP, ATP & Perencanaan Pembelajaran', deskripsi: 'Analisis Capaian Pembelajaran, Alur Tujuan Pembelajaran, dan Modul Ajar/RPM yang valid' },
@@ -160,14 +159,7 @@ export const INSTRUMEN_1_ITEMS: { id: number; nama: string; deskripsi: string }[
   { id: 13, nama: 'Analisis Hasil Asesmen / Nilai', deskripsi: 'Analisis butir soal/aspek kompetensi dan pemetaan ketuntasan belajar siswa' },
   { id: 14, nama: 'Program Perbaikan & Pengayaan', deskripsi: 'Perencanaan dan pelaksanaan tindak lanjut remidial dan pengayaan terukur' },
   { id: 15, nama: 'Buku Refleksi Pembelajaran Guru', deskripsi: 'Catatan evaluasi diri guru terhadap metode, efektivitas strategi, dan respon murid' },
-  { id: 16, nama: 'Data Target Kurikulum & Daya Serap', deskripsi: 'Grafik / persentase pencapaian target kurikulum dan daya serap murid per semester' },
   { id: 17, nama: 'Buku Bimbingan & Konseling Siswa', deskripsi: 'Catatan pembinaan siswa bermasalah/berbakat dan koordinasi bersama Guru BK' },
-  { id: 18, nama: 'Buku Mutasi Siswa', deskripsi: 'Dokumentasi keluar-masuk peserta didik pada rombel yang diampu' },
-  { id: 19, nama: 'Buku Inventaris Kelas', deskripsi: 'Pencatatan sarana belajar, media pembelajaran, dan peralatan pendukung kelas' },
-  { id: 20, nama: 'Kartu Inventaris Ruang (KIR)', deskripsi: 'Daftar inventaris ruangan kelas/laboratorium yang dipelihara secara periodik' },
-  { id: 21, nama: 'Buku Kenaikan Kelas / Kelulusan', deskripsi: 'Kriteria dan rekap penetapan kenaikan kelas atau kelulusan murid' },
-  { id: 22, nama: 'Buku Prestasi Akademik & Non-Akademik', deskripsi: 'Catatan capaian prestasi perlombaan, kompetisi, dan bakat minat peserta didik' },
-  { id: 23, nama: 'Buku Tamu Kelas / Supervisi', deskripsi: 'Catatan kunjungan kepala sekolah, pengawas, atau peninjau ruang kelas' },
   { id: 24, nama: 'Buku Komunikasi Orang Tua / Humas', deskripsi: 'Jurnal penghubung, pertemuan wali murid, dan tindak lanjut kemitraan keluarga' },
 ];
 
@@ -175,7 +167,7 @@ export const INSTRUMEN_2_ITEMS: { id: number; nama: string; deskripsi: string }[
   { id: 1, nama: 'Identitas RPM / Modul Ajar', deskripsi: 'Memuat nama satuan pendidikan, nama guru, mata pelajaran, fase/kelas, dan alokasi waktu jelas' },
   { id: 2, nama: 'Identifikasi Kesiapan Murid', deskripsi: 'Mencantumkan data kesiapan, minat, atau profil belajar murid dari asesmen awal' },
   { id: 3, nama: 'Materi Pembelajaran Esensial', deskripsi: 'Materi kontekstual, terstruktur, bermakna, dan selaras dengan fase perkembangan murid' },
-  { id: 4, nama: 'Dimensi Profil Pelajar Pancasila', deskripsi: 'Mencantumkan dimensi profil lulusan (Beriman, Mandiri, Bernalar Kritis, Kreatif, Gotong Royong, Kebinekaan Global)' },
+  { id: 4, nama: 'Dimensi Profil Lulusan', deskripsi: 'Mencantumkan dimensi profil lulusan (Beriman dan Bertaqwa Kepada Tuhan Yang Maha Esa, Kewargaan, Penalaran Kritis, Kreativitas, Kolaborasi, Kemandirian, Kesehatan, Komunikasi)' },
   { id: 5, nama: 'Capaian Pembelajaran (CP)', deskripsi: 'Mencantumkan elemen dan deskripsi CP resmi yang menjadi acuan' },
   { id: 6, nama: 'Keterkaitan Lintas Disiplin Ilmu', deskripsi: 'Mengintegrasikan keterhubungan materi dengan disiplin ilmu lain atau isu nyata kekinian' },
   { id: 7, nama: 'Tujuan Pembelajaran (TP)', deskripsi: 'Memuat kompetensi terukur dan lingkup materi dengan kata kerja operasional yang jelas' },
@@ -247,15 +239,15 @@ export function calculateInstrumen1Score(scores: Record<number, number>): {
   grade: 'A' | 'B' | 'C' | 'D' | '-';
   badgeColor: string;
 } {
-  const max = 24 * 5; // 120
+  const max = INSTRUMEN_1_ITEMS.length * 5; // 16 items * 5 = 80
   let total = 0;
   let filledCount = 0;
-  for (let i = 1; i <= 24; i++) {
-    if (scores[i] && scores[i] > 0) {
-      total += scores[i];
+  INSTRUMEN_1_ITEMS.forEach((item) => {
+    if (scores[item.id] && scores[item.id] > 0) {
+      total += scores[item.id];
       filledCount++;
     }
-  }
+  });
 
   if (filledCount === 0 || total === 0) {
     return {

@@ -110,7 +110,9 @@ export const Instrument1View: React.FC<Instrument1ViewProps> = ({
 
   const handleQuickFill = (val: number) => {
     const newScores: Record<number, number> = {};
-    for (let i = 1; i <= 24; i++) newScores[i] = val;
+    INSTRUMEN_1_ITEMS.forEach((item) => {
+      newScores[item.id] = val;
+    });
     setFormData((prev) => ({ ...prev, scores: newScores }));
   };
 
@@ -241,9 +243,9 @@ export const Instrument1View: React.FC<Instrument1ViewProps> = ({
 
     if (highItems.length > 0) {
       const topNames = highItems.slice(0, 4).map((i) => i.nama).join(', ');
-      autoCatatan = `Kelengkapan administrasi pembelajaran guru mencapai skor ${scoreResult.total}/120 (${scoreResult.percentage}% - Predikat ${scoreResult.predikat}). Kelebihan utama tampak pada dokumen: ${topNames}, yang telah tersusun sangat rapi, lengkap, dan sesuai ketentuan kurikulum.`;
+      autoCatatan = `Kelengkapan administrasi pembelajaran guru mencapai skor ${scoreResult.total}/${scoreResult.max} (${scoreResult.percentage}% - Predikat ${scoreResult.predikat}). Kelebihan utama tampak pada dokumen: ${topNames}, yang telah tersusun sangat rapi, lengkap, dan sesuai ketentuan kurikulum.`;
     } else {
-      autoCatatan = `Administrasi pembelajaran telah dinilai dengan capaian skor ${scoreResult.total}/120 (${scoreResult.percentage}% - Predikat ${scoreResult.predikat}). Beberapa dokumen pokok telah mulai dipersiapkan guru.`;
+      autoCatatan = `Administrasi pembelajaran telah dinilai dengan capaian skor ${scoreResult.total}/${scoreResult.max} (${scoreResult.percentage}% - Predikat ${scoreResult.predikat}). Beberapa dokumen pokok telah mulai dipersiapkan guru.`;
     }
 
     if (lowItems.length > 0) {
@@ -467,13 +469,13 @@ export const Instrument1View: React.FC<Instrument1ViewProps> = ({
         </div>
       </div>
 
-      {/* Evaluation Table: 24 Items */}
+      {/* Evaluation Table: 16 Items */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
         <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <h3 className="font-bold text-slate-900 text-sm md:text-base">
-            Tabel Evaluasi Butir Administrasi Pembelajaran (24 Butir)
+            Tabel Evaluasi Butir Administrasi Pembelajaran ({INSTRUMEN_1_ITEMS.length} Butir)
           </h3>
-          <span className="text-xs font-mono text-slate-500">Maksimum Skor: 120</span>
+          <span className="text-xs font-mono text-slate-500">Maksimum Skor: {scoreResult.max}</span>
         </div>
 
         <div className="overflow-x-auto">
@@ -490,11 +492,11 @@ export const Instrument1View: React.FC<Instrument1ViewProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 text-slate-700">
-              {INSTRUMEN_1_ITEMS.map((item) => {
+              {INSTRUMEN_1_ITEMS.map((item, idx) => {
                 const currentScore = formData.scores[item.id] || 0;
                 return (
                   <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="py-3 px-3 text-center font-bold text-slate-500">{item.id}</td>
+                    <td className="py-3 px-3 text-center font-bold text-slate-500">{idx + 1}</td>
                     <td className="py-3 px-4">
                       <div className="font-bold text-slate-900 text-xs md:text-sm">{item.nama}</div>
                       <div className="text-[11px] text-slate-500 mt-0.5 leading-snug">{item.deskripsi}</div>

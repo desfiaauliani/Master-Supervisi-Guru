@@ -71,7 +71,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
     },
     {
       id: 'ub-4',
-      aspek: '4. Asesmen & Umpan Balik',
+      aspek: '4. Asesmen Pembelajaran',
       kekuatan: 'Umpan balik formatif langsung diberikan kepada kelompok yang mengalami miskonsepsi.',
       areaPengembangan: 'Mengembangkan instrumen asesmen antarteman (peer-review) sederhana.',
     },
@@ -155,7 +155,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
     },
     {
       id: 'ub-4',
-      aspek: '4. Asesmen & Umpan Balik',
+      aspek: '4. Asesmen Pembelajaran',
       kekuatan: '',
       areaPengembangan: '',
     },
