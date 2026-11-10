@@ -194,7 +194,7 @@ function createSampleInst4(teacherId: string): Instrument4PascaObservasi {
     rencanaTindakLanjut: [
       {
         id: 'rtl-1',
-        aspek: 'Penyempurnaan Modul Ajar (Perencanaan)',
+        aspek: '1. Perencanaan',
         tindakLanjut: 'Menambahkan variasi penugasan bertingkat (tiered assignment) pada rubrik sumatif',
         penanggungJawab: 'Guru Mata Pelajaran',
         waktuPelaksanaan: 'Minggu ke-4 Oktober 2024',
@@ -202,7 +202,7 @@ function createSampleInst4(teacherId: string): Instrument4PascaObservasi {
       },
       {
         id: 'rtl-2',
-        aspek: 'Strategi Manajemen Waktu (Pelaksanaan)',
+        aspek: '2. Pelaksanaan',
         tindakLanjut: 'Menerapkan timer interaktif dan teknik round-robin pada sesi diskusi kelas',
         penanggungJawab: 'Guru Mata Pelajaran & Tim Pengembang',
         waktuPelaksanaan: 'Awal November 2024',
@@ -210,15 +210,23 @@ function createSampleInst4(teacherId: string): Instrument4PascaObservasi {
       },
       {
         id: 'rtl-3',
-        aspek: 'Pengembangan Asesmen Formatif (Asesmen)',
+        aspek: '3. Pengelolaan Kelas',
+        tindakLanjut: 'Menata formasi tempat duduk berkelompok dinamis untuk mendukung diskusi kolaboratif yang kondusif',
+        penanggungJawab: 'Guru Mata Pelajaran & Wali Kelas',
+        waktuPelaksanaan: 'Pertengahan November 2024',
+        status: 'Dalam Proses',
+      },
+      {
+        id: 'rtl-4',
+        aspek: '4. Asesmen',
         tindakLanjut: 'Menyusun instrumen penilaian antarteman (peer-assessment) digital sederhana',
         penanggungJawab: 'Guru Mata Pelajaran',
         waktuPelaksanaan: 'Pertengahan November 2024',
         status: 'Direncanakan',
       },
       {
-        id: 'rtl-4',
-        aspek: 'Pengembangan Keprofesian Berkelanjutan (PKB)',
+        id: 'rtl-5',
+        aspek: '5. Pengembangan Profesional Guru',
         tindakLanjut: 'Berbagi praktik baik pembelajaran mendalam di Komunitas Belajar (Kombel) Guru Bahasa Indonesia',
         penanggungJawab: 'Guru & Koordinator Kombel',
         waktuPelaksanaan: 'Akhir November 2024',

@@ -128,7 +128,9 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
 
   const handleQuickFill = (val: number) => {
     const newScores: Record<number, number> = {};
-    for (let i = 1; i <= 22; i++) newScores[i] = val;
+    INSTRUMEN_3_ITEMS.forEach((item) => {
+      newScores[item.id] = val;
+    });
     setFormData((prev) => ({ ...prev, scores: newScores }));
   };
 
@@ -153,7 +155,7 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
     }));
   };
 
-  // Logika cerdas: Menghasilkan referensi catatan, rekomendasi, dan tindak lanjut mengacu pada hasil skor observasi 22 indikator
+  // Logika cerdas: Menghasilkan referensi catatan, rekomendasi, dan tindak lanjut mengacu pada hasil skor observasi 24 indikator
   const generateScoreBasedReferences = () => {
     const scores = formData.scores || {};
     const ratedItems = Object.entries(scores).map(([k, v]) => ({ id: Number(k), score: Number(v) }));
@@ -335,9 +337,9 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
 
     if (highItems.length > 0) {
       const topNames = highItems.slice(0, 3).map((i) => i.nama).join(', ');
-      autoCatatan = `Observasi kelas menunjukkan kinerja pembelajaran yang sangat baik dengan perolehan skor ${scoreResult.total}/88 (${scoreResult.percentage}% - Predikat ${scoreResult.predikat}). Kekuatan menonjol teramati pada: ${topNames}. Hubungan interaktif guru-murid terbangun secara kondusif dan inklusif.`;
+      autoCatatan = `Observasi kelas menunjukkan kinerja pembelajaran yang sangat baik dengan perolehan skor ${scoreResult.total}/${scoreResult.max} (${scoreResult.percentage}% - Predikat ${scoreResult.predikat}). Kekuatan menonjol teramati pada: ${topNames}. Hubungan interaktif guru-murid terbangun secara kondusif dan inklusif.`;
     } else {
-      autoCatatan = `Pembelajaran telah diobservasi dengan perolehan skor ${scoreResult.total}/88 (${scoreResult.percentage}% - Predikat ${scoreResult.predikat}). Guru telah berupaya mengelola tahapan kelas sesuai rancangan kegiatan.`;
+      autoCatatan = `Pembelajaran telah diobservasi dengan perolehan skor ${scoreResult.total}/${scoreResult.max} (${scoreResult.percentage}% - Predikat ${scoreResult.predikat}). Guru telah berupaya mengelola tahapan kelas sesuai rancangan kegiatan.`;
     }
 
     if (lowItems.length > 0) {
@@ -389,8 +391,8 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
     { key: 'A', title: 'A. Perencanaan di Kelas' },
     { key: 'B', title: 'B. Pelaksanaan Pembelajaran' },
     { key: 'C', title: 'C. Pengelolaan Kelas & Suasana Belajar' },
-    { key: 'D', title: 'D. Implementasi Pembelajaran Mendalam (Deep Learning)' },
-    { key: 'E', title: 'E. Asesmen Pembelajaran & Umpan Balik' },
+    { key: 'D', title: 'D. IMPLEMENTASI PEMBELAJARAN MENDALAM' },
+    { key: 'E', title: 'E. Asesmen Pembelajaran' },
     { key: 'F', title: 'F. Refleksi & Komunikasi Pembelajaran Guru' },
   ];
 
@@ -592,6 +594,130 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
             const sectionItems = INSTRUMEN_3_ITEMS.filter((item) => item.section === sec.key);
             if (sectionItems.length === 0) return null;
 
+            // Section D: Implementasi Pembelajaran Mendalam with format matching A, B, C, E, F
+            if (sec.key === 'D') {
+              const subSections = [
+                { title: '1. Keselarasan', items: sectionItems.filter((i) => i.subSection === '1. Keselarasan') },
+                { title: '2. Kerangka Pembelajaran', items: sectionItems.filter((i) => i.subSection === '2. Kerangka Pembelajaran') },
+                { title: '3. Langkah Pembelajaran', items: sectionItems.filter((i) => i.subSection === '3. Langkah Pembelajaran') },
+              ];
+
+              return (
+                <div key={sec.key} className="p-4 md:p-5">
+                  <div className="mb-3 flex items-center justify-between">
+                    <h4 className="font-bold text-slate-900 text-xs md:text-sm uppercase tracking-wide flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-mono font-bold">
+                        {sec.key}
+                      </span>
+                      <span>{sec.title}</span>
+                    </h4>
+                    <span className="text-[11px] text-slate-400 font-medium">
+                      {sectionItems.length} Indikator
+                    </span>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 text-slate-600 border-b border-slate-200 font-semibold uppercase text-[10px]">
+                          <th className="py-2 px-2 text-center w-8">No</th>
+                          <th className="py-2 px-3 min-w-[260px]">Fokus Indikator & Deskripsi</th>
+                          <th className="py-2 px-2 text-center w-36">Skala Nilai (1-4)</th>
+                          <th className="py-2 px-3 min-w-[200px]">Catatan Pengamat</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-slate-700">
+                        {subSections.map((subSec) => (
+                          <React.Fragment key={subSec.title}>
+                            {/* Sub-section Header Divider Row */}
+                            <tr className="bg-sky-50/70 border-y border-sky-100">
+                              <td colSpan={4} className="py-2 px-3 font-bold text-sky-900 text-xs">
+                                <div className="flex items-center gap-2">
+                                  <span className="w-2 h-2 rounded-full bg-sky-500"></span>
+                                  <span>{subSec.title}</span>
+                                </div>
+                              </td>
+                            </tr>
+
+                            {subSec.items.map((item) => {
+                              const curScore = formData.scores[item.id] || 0;
+                              return (
+                                <tr key={item.id} className="hover:bg-slate-50/50">
+                                  <td className="py-2.5 px-2 text-center font-bold text-slate-500 align-top">
+                                    {item.id}
+                                  </td>
+                                  <td className="py-2.5 px-3 align-top">
+                                    {item.highlightHeader && (
+                                      <div className="bg-[#fce4d6] text-amber-950 font-bold px-2 py-0.5 rounded text-xs inline-block mb-1 border border-orange-200">
+                                        {item.highlightHeader}
+                                      </div>
+                                    )}
+
+                                    {item.id === 9 && (
+                                      <div className="font-bold text-slate-900 mb-1">
+                                        Implementasi perencanaan selaras dengan perencanaan pembelajaran:
+                                      </div>
+                                    )}
+
+                                    {((item.id >= 11 && item.id <= 15) || (item.id >= 19 && item.id <= 20)) && (
+                                      <div className="font-bold text-slate-900 leading-snug">
+                                        {item.deskripsi}
+                                      </div>
+                                    )}
+
+                                    {item.subItems && item.subItems.length > 0 && (
+                                      <div className="space-y-1 pl-1 mt-0.5">
+                                        {item.subItems.map((si, sIdx) => (
+                                          <div key={sIdx} className="flex items-start gap-1.5 text-slate-700 text-xs">
+                                            <span className="font-semibold text-slate-600 shrink-0">{si.label}</span>
+                                            <span className="leading-snug">{si.text}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </td>
+                                  <td className="py-2.5 px-2 text-center align-top">
+                                    <div className="inline-flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
+                                      {[1, 2, 3, 4].map((v) => (
+                                        <button
+                                          key={v}
+                                          type="button"
+                                          onClick={() => handleScoreChange(item.id, v)}
+                                          className={`w-6 h-6 rounded text-xs font-bold transition-all ${
+                                            curScore === v
+                                              ? v >= 3
+                                                ? 'bg-indigo-600 text-white shadow-xs'
+                                                : 'bg-rose-600 text-white shadow-xs'
+                                              : 'text-slate-600 hover:bg-slate-200'
+                                          }`}
+                                          title={`Pilih Skor ${v}`}
+                                        >
+                                          {v}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </td>
+                                  <td className="py-2.5 px-3 align-top">
+                                    <input
+                                      type="text"
+                                      placeholder="Catatan pengamatan..."
+                                      value={formData.catatanPerIndikator[item.id] || ''}
+                                      onChange={(e) => handleCatatanIndikatorChange(item.id, e.target.value)}
+                                      className="w-full px-2 py-1 text-xs bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-indigo-400 rounded-md focus:outline-hidden"
+                                    />
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </React.Fragment>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              );
+            }
+
             return (
               <div key={sec.key} className="p-4 md:p-5">
                 <div className="mb-3 flex items-center justify-between">
@@ -676,7 +802,7 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
               <span>KESIMPULAN PENGAMATAN, REKOMENDASI & TINDAK LANJUT</span>
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              Referensi catatan, rekomendasi, dan tindak lanjut mengacu secara langsung pada 22 indikator pengamatan kelas
+              Referensi catatan, rekomendasi, dan tindak lanjut mengacu secara langsung pada 24 indikator pengamatan kelas
             </p>
           </div>
 

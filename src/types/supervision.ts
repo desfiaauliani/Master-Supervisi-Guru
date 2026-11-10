@@ -178,20 +178,24 @@ export const INSTRUMEN_2_ITEMS: { id: number; nama: string; deskripsi: string }[
   { id: 12, nama: 'Pemanfaatan Teknologi Digital', deskripsi: 'Mengintegrasikan platform digital, media interaktif, simulasi, atau referensi online edukatif' },
   { id: 13, nama: 'Kegiatan Awal (Pendahuluan)', deskripsi: 'Memuat apersepsi kontekstual, motivasi, pemantik, dan penyampaian tujuan pembelajaran' },
   { id: 14, nama: 'Kegiatan Inti: Tahap MEMAHAMI', deskripsi: 'Aktivitas eksplorasi konsep, pemahaman esensial, dan penalaran materi secara mendalam' },
-  { id: 15, nama: 'Kegiatan Inti: Tahap MEREFLEKSI', deskripsi: 'Aktivitas mengolah pemikiran kritis, mendiskusikan makna, dan mengevaluasi pemahaman' },
-  { id: 16, nama: 'Kegiatan Inti: Tahap MEMULIAKAN', deskripsi: 'Apresiasi keberagaman pandangan, penumbuhan budi pekerti, dan kepedulian sosial murid' },
-  { id: 17, nama: 'Asesmen Awal (Diagnostik)', deskripsi: 'Instrumen diagnosis awal untuk memetakan kesiapan murid sebelum materi baru' },
-  { id: 18, nama: 'Asesmen Proses (Formatif)', deskripsi: 'Teknik observasi, lembar ceklis, umpan balik langsung selama aktivitas berlangsung' },
-  { id: 19, nama: 'Asesmen Akhir (Sumatif)', deskripsi: 'Evaluasi ketercapaian tujuan pembelajaran di akhir materi atau lingkup materi' },
-  { id: 20, nama: 'Rubrik Penilaian & LKPD Terlampir', deskripsi: 'Lembar Kerja Peserta Didik (LKPD) dan rubrik penilaian kriteria ketercapaian (KKTP) lengkap' },
+  { id: 15, nama: 'Kegiatan Inti: Tahap MENGAPLIKASI', deskripsi: 'Menghubungkan konsep baru, menerapkan dalam situasi nyata, eksplorasi lanjut, berpikir kritis & mencari solusi inovatif' },
+  { id: 16, nama: 'Kegiatan Inti: Tahap MEREFLEKSI', deskripsi: 'Aktivitas mengolah pemikiran kritis, mendiskusikan makna, dan mengevaluasi pemahaman' },
+  { id: 17, nama: 'Kegiatan Inti: Tahap MEMULIAKAN', deskripsi: 'Apresiasi keberagaman pandangan, penumbuhan budi pekerti, dan kepedulian sosial murid' },
+  { id: 18, nama: 'Asesmen Awal (Diagnostik)', deskripsi: 'Instrumen diagnosis awal untuk memetakan kesiapan murid sebelum materi baru' },
+  { id: 19, nama: 'Asesmen Proses (Formatif)', deskripsi: 'Teknik observasi, lembar ceklis, umpan balik langsung selama aktivitas berlangsung' },
+  { id: 20, nama: 'Asesmen Akhir (Sumatif)', deskripsi: 'Evaluasi ketercapaian tujuan pembelajaran di akhir materi atau lingkup materi' },
+  { id: 21, nama: 'Rubrik Penilaian & LKPD Terlampir', deskripsi: 'Lembar Kerja Peserta Didik (LKPD) dan rubrik penilaian kriteria ketercapaian (KKTP) lengkap' },
 ];
 
 export interface ObservasiIndicator {
   id: number;
   section: string;
   sectionTitle: string;
+  subSection?: string; // e.g., '1. Keselarasan', '2. Kerangka Pembelajaran', '3. Langkah Pembelajaran'
   nama: string;
   deskripsi: string;
+  subItems?: { label: string; text: string }[];
+  highlightHeader?: string; // e.g., 'MEMAHAMI:', 'MENGAPLIKASI:', 'MEREFLEKSI:'
 }
 
 export const INSTRUMEN_3_ITEMS: ObservasiIndicator[] = [
@@ -209,25 +213,148 @@ export const INSTRUMEN_3_ITEMS: ObservasiIndicator[] = [
   { id: 7, section: 'C', sectionTitle: 'Pengelolaan Kelas', nama: 'Suasana Belajar Kondusif & Positif', deskripsi: 'Menjaga keterlibatan murid dengan disiplin positif, saling menghormati, dan tanpa intimidasi' },
   { id: 8, section: 'C', sectionTitle: 'Pengelolaan Kelas', nama: 'Pemanfaatan Sarana & Digital', deskripsi: 'Menggunakan media pembelajaran, proyektor/alat peraga/gawai secara efektif dan tepat guna' },
   
-  // D. Implementasi Pembelajaran Mendalam (Deep Learning)
-  { id: 9, section: 'D', sectionTitle: 'Implementasi Pembelajaran Mendalam', nama: 'Keselarasan Pedagogis', deskripsi: 'Keselarasan utuh antara tujuan pembelajaran, proses aktivitas belajar, dan bentuk evaluasi' },
-  { id: 10, section: 'D', sectionTitle: 'Implementasi Pembelajaran Mendalam', nama: 'Kerangka Pembelajaran Terstruktur', deskripsi: 'Alur pembelajaran logis, berkesinambungan dari konseptual menuju kontekstual dan aksi nyata' },
-  { id: 11, section: 'D', sectionTitle: 'Implementasi Pembelajaran Mendalam', nama: 'Tahap Memahami (Meaningful Learning)', deskripsi: 'Murid diajak menguasai konsep inti secara mendalam, bukan sekadar menghafal rumus/teks' },
-  { id: 12, section: 'D', sectionTitle: 'Implementasi Pembelajaran Mendalam', nama: 'Tahap Mengaplikasi (Authentic Problem)', deskripsi: 'Murid menerapkan pengetahuan pada situasi masalah kontekstual yang relevan di masyarakat' },
-  { id: 13, section: 'D', sectionTitle: 'Implementasi Pembelajaran Mendalam', nama: 'Tahap Merefleksi (Metacognition)', deskripsi: 'Murid menyadari proses berpikirnya sendiri, mengakui kesalahan, dan menemukan solusi perbaikan' },
-  { id: 14, section: 'D', sectionTitle: 'Implementasi Pembelajaran Mendalam', nama: 'Tahap Memuliakan (Character & Humanity)', deskripsi: 'Pembelajaran menumbuhkan integritas, kepekaan sosial, gotong royong, dan rasa syukur' },
-  { id: 15, section: 'D', sectionTitle: 'Implementasi Pembelajaran Mendalam', nama: 'Akomodasi Diferensiasi Murid', deskripsi: 'Guru memberikan scaffolding dan pendampingan yang disesuaikan dengan kebutuhan ragam murid' },
-  
+  // D. IMPLEMENTASI PEMBELAJARAN MENDALAM
+  // 1. Keselarasan
+  {
+    id: 9,
+    section: 'D',
+    sectionTitle: 'Implementasi Pembelajaran Mendalam',
+    subSection: '1. Keselarasan',
+    nama: 'Implementasi perencanaan selaras dengan perencanaan pembelajaran:',
+    deskripsi: 'Implementasi perencanaan selaras dengan perencanaan pembelajaran pada tahap awal, inti, dan penutup.',
+    subItems: [
+      { label: 'a.', text: 'Awal pembelajaran' },
+      { label: 'b.', text: 'Inti pembelajaran (memahami, mengaplikasi, merefleksi)' },
+      { label: 'c.', text: 'Penutupan pembelajaran' },
+    ],
+  },
+  {
+    id: 10,
+    section: 'D',
+    sectionTitle: 'Implementasi Pembelajaran Mendalam',
+    subSection: '1. Keselarasan',
+    nama: 'Upaya mencapai tujuan pembelajaran:',
+    deskripsi: 'Pencapaian dimensi profil lulusan selaras perencanaan atau disesuaikan konteks kebutuhan belajar murid.',
+    subItems: [
+      { label: 'a.', text: 'Upaya mencapai tujuan pembelajaran menuju pencapaian dimensi profil lulusan selaras dengan perencanaan, atau' },
+      { label: 'b.', text: 'Disesuaikan dengan konteks kebutuhan belajar siswa' },
+    ],
+  },
+
+  // 2. Kerangka Pembelajaran
+  {
+    id: 11,
+    section: 'D',
+    sectionTitle: 'Implementasi Pembelajaran Mendalam',
+    subSection: '2. Kerangka Pembelajaran',
+    nama: 'Strategi pembelajaran diimplementasikan:',
+    deskripsi: 'Strategi pembelajaran diimplementasikan sesuai perencanaan / dimodifikasi sesuai kebutuhan / tantangan dapat terlewati untuk mencapai CP',
+  },
+  {
+    id: 12,
+    section: 'D',
+    sectionTitle: 'Implementasi Pembelajaran Mendalam',
+    subSection: '2. Kerangka Pembelajaran',
+    nama: 'Lingkungan belajar:',
+    deskripsi: 'Lingkungan belajar tergambar dalam langkah dan/atau asesmen pembelajaran',
+  },
+  {
+    id: 13,
+    section: 'D',
+    sectionTitle: 'Implementasi Pembelajaran Mendalam',
+    subSection: '2. Kerangka Pembelajaran',
+    nama: 'Kemitraan pembelajaran:',
+    deskripsi: 'Kemitraan pembelajaran tergambar dalam langkah dan/atau asesmen pembelajaran',
+  },
+  {
+    id: 14,
+    section: 'D',
+    sectionTitle: 'Implementasi Pembelajaran Mendalam',
+    subSection: '2. Kerangka Pembelajaran',
+    nama: 'Pemanfaatan digital:',
+    deskripsi: 'Pemanfaatan digital tergambar dalam langkah dan/atau asesmen pembelajaran',
+  },
+
+  // 3. Langkah Pembelajaran
+  {
+    id: 15,
+    section: 'D',
+    sectionTitle: 'Implementasi Pembelajaran Mendalam',
+    subSection: '3. Langkah Pembelajaran',
+    nama: 'Saling Memuliakan:',
+    deskripsi: 'Guru dan murid saling MEMULIAKAN (bahasa verbal maupun nonverbal)',
+  },
+  {
+    id: 16,
+    section: 'D',
+    sectionTitle: 'Implementasi Pembelajaran Mendalam',
+    subSection: '3. Langkah Pembelajaran',
+    nama: 'Tahap MEMAHAMI:',
+    deskripsi: 'Penguasaan konsep mendalam melalui stimulus dan penanaman nilai moral.',
+    highlightHeader: 'MEMAHAMI:',
+    subItems: [
+      { label: 'a.', text: 'Menghubungkan pengetahuan baru dengan pengetahuan lama' },
+      { label: 'b.', text: 'Menstimulasi proses berpikir' },
+      { label: 'c.', text: 'Menghubungkan dengan konteks nyata' },
+      { label: 'd.', text: 'Eksploratif & kolaboratif' },
+      { label: 'e.', text: 'Menanamkan nilai moral & karakter' },
+    ],
+  },
+  {
+    id: 17,
+    section: 'D',
+    sectionTitle: 'Implementasi Pembelajaran Mendalam',
+    subSection: '3. Langkah Pembelajaran',
+    nama: 'Tahap MENGAPLIKASI:',
+    deskripsi: 'Penerapan konsep baru pada situasi nyata dan solusi inovatif.',
+    highlightHeader: 'MENGAPLIKASI:',
+    subItems: [
+      { label: 'a.', text: 'Menghubungkan konsep baru dengan pengetahuan sebelumnya' },
+      { label: 'b.', text: 'Menerapkan dalam situasi nyata/bidang lain' },
+      { label: 'c.', text: 'Eksplorasi lanjut' },
+      { label: 'd.', text: 'Berpikir kritis & solusi inovatif' },
+    ],
+  },
+  {
+    id: 18,
+    section: 'D',
+    sectionTitle: 'Implementasi Pembelajaran Mendalam',
+    subSection: '3. Langkah Pembelajaran',
+    nama: 'Tahap MEREFLEKSI:',
+    deskripsi: 'Kesadaran metakognitif, evaluasi diri, dan regulasi emosi murid.',
+    highlightHeader: 'MEREFLEKSI:',
+    subItems: [
+      { label: 'a.', text: 'Motivasi belajar' },
+      { label: 'b.', text: 'Evaluasi diri' },
+      { label: 'c.', text: 'Strategi berpikir' },
+      { label: 'd.', text: 'Metakognisi' },
+      { label: 'e.', text: 'Regulasi emosi' },
+    ],
+  },
+  {
+    id: 19,
+    section: 'D',
+    sectionTitle: 'Implementasi Pembelajaran Mendalam',
+    subSection: '3. Langkah Pembelajaran',
+    nama: 'Prinsip Pembelajaran Mendalam:',
+    deskripsi: 'Prinsip pembelajaran mendalam (berkesadaran, bermakna, menggembirakan) tergambar pada setiap pengalaman belajar',
+  },
+  {
+    id: 20,
+    section: 'D',
+    sectionTitle: 'Implementasi Pembelajaran Mendalam',
+    subSection: '3. Langkah Pembelajaran',
+    nama: 'Akomodasi Karakteristik Peserta Didik:',
+    deskripsi: 'Praktik pembelajaran mengakomodir karakteristik peserta didik (usia, perkembangan, kemampuan, minat, gaya belajar, dll.)',
+  },
+
   // E. Asesmen
-  { id: 16, section: 'E', sectionTitle: 'Asesmen Pembelajaran', nama: 'Asesmen Awal / Cek Prasyarat', deskripsi: 'Mengecek kesiapan dan pemahaman prasyarat murid sebelum melangkah ke konsep inti' },
-  { id: 17, section: 'E', sectionTitle: 'Asesmen Pembelajaran', nama: 'Asesmen Formatif & Observasi Proses', deskripsi: 'Mengamati perkembangan keterampilan dan partisipasi murid dengan lembar ceklis/catatan' },
-  { id: 18, section: 'E', sectionTitle: 'Asesmen Pembelajaran', nama: 'Umpan Balik Deskriptif Konstruktif', deskripsi: 'Memberikan feedback langsung yang spesifik, memuji proses usaha, dan menunjukkan perbaikan' },
-  { id: 19, section: 'E', sectionTitle: 'Asesmen Pembelajaran', nama: 'Asesmen Ketercapaian Tujuan (Sumatif)', deskripsi: 'Memastikan ketercapaian tujuan melalui instrumen yang sahih dan objektif' },
-  
+  { id: 21, section: 'E', sectionTitle: 'Asesmen Pembelajaran', nama: 'Asesmen Formatif & Observasi Proses', deskripsi: 'Mengamati perkembangan keterampilan dan partisipasi murid dengan lembar ceklis/catatan dan umpan balik deskriptif' },
+  { id: 22, section: 'E', sectionTitle: 'Asesmen Pembelajaran', nama: 'Asesmen Ketercapaian Tujuan (Sumatif)', deskripsi: 'Memastikan ketercapaian tujuan melalui instrumen yang sahih, objektif, dan rubrik penilaian' },
+
   // F. Refleksi Guru
-  { id: 20, section: 'F', sectionTitle: 'Refleksi Guru', nama: 'Kesadaran Kekuatan & Pelajaran Belajar', deskripsi: 'Guru mampu mengenali momen keberhasilan dan respon positif murid secara objektif' },
-  { id: 21, section: 'F', sectionTitle: 'Refleksi Guru', nama: 'Keterbukaan terhadap Evaluasi', deskripsi: 'Guru terbuka mengakui bagian pembelajaran yang belum optimal dan memerlukan penyesuaian' },
-  { id: 22, section: 'F', sectionTitle: 'Refleksi Guru', nama: 'Inisiatif Tindak Lanjut Mandiri', deskripsi: 'Guru menyampaikan gagasan perbaikan dan komitmen pengembangan diri secara proaktif' },
+  { id: 23, section: 'F', sectionTitle: 'Refleksi Guru', nama: 'Kesadaran Kekuatan & Pelajaran Belajar', deskripsi: 'Guru mampu mengenali momen keberhasilan dan respon positif murid secara objektif' },
+  { id: 24, section: 'F', sectionTitle: 'Refleksi Guru', nama: 'Inisiatif Tindak Lanjut Mandiri', deskripsi: 'Guru menyampaikan gagasan perbaikan dan komitmen pengembangan diri secara proaktif' },
 ];
 
 // Helper calculations
@@ -291,15 +418,15 @@ export function calculateInstrumen2Score(items: Record<number, { ya: boolean; ca
   grade: 'A' | 'B' | 'C' | 'D' | '-';
   badgeColor: string;
 } {
-  const max = 20;
+  const max = INSTRUMEN_2_ITEMS.length;
   let totalYa = 0;
   let answeredCount = 0;
-  for (let i = 1; i <= 20; i++) {
-    if (items[i] !== undefined) {
+  INSTRUMEN_2_ITEMS.forEach((it) => {
+    if (items[it.id] !== undefined) {
       answeredCount++;
-      if (items[i].ya) totalYa++;
+      if (items[it.id].ya) totalYa++;
     }
-  }
+  });
 
   if (answeredCount === 0) {
     return {
@@ -343,15 +470,15 @@ export function calculateInstrumen3Score(scores: Record<number, number>): {
   grade: 'A' | 'B' | 'C' | 'D' | '-';
   badgeColor: string;
 } {
-  const max = 22 * 4; // 88
+  const max = INSTRUMEN_3_ITEMS.length * 4; // 24 items * 4 = 96
   let total = 0;
   let filledCount = 0;
-  for (let i = 1; i <= 22; i++) {
-    if (scores[i] && scores[i] > 0) {
-      total += scores[i];
+  INSTRUMEN_3_ITEMS.forEach((item) => {
+    if (scores[item.id] && scores[item.id] > 0) {
+      total += scores[item.id];
       filledCount++;
     }
-  }
+  });
 
   if (filledCount === 0 || total === 0) {
     return {

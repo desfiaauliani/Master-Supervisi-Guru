@@ -86,7 +86,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
   const defaultRTL: PascaRencanaTindakLanjut[] = [
     {
       id: 'rtl-1',
-      aspek: 'Perencanaan (RPM/MA)',
+      aspek: '1. Perencanaan',
       tindakLanjut: 'Menyempurnakan variasi rubrik asesmen formatif dan LKPD berdiferensiasi',
       penanggungJawab: 'Guru Mata Pelajaran',
       waktuPelaksanaan: '2 Minggu ke depan',
@@ -94,7 +94,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
     },
     {
       id: 'rtl-2',
-      aspek: 'Pelaksanaan Pembelajaran',
+      aspek: '2. Pelaksanaan',
       tindakLanjut: 'Menerapkan timer digital terpusat untuk membatasi presentasi dan memaksimalkan tanya jawab',
       penanggungJawab: 'Guru Mata Pelajaran',
       waktuPelaksanaan: 'Pertemuan berikutnya',
@@ -102,7 +102,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
     },
     {
       id: 'rtl-3',
-      aspek: 'Pengelolaan Kelas',
+      aspek: '3. Pengelolaan Kelas',
       tindakLanjut: 'Meninjau kembali kesepakatan kelas terkait kedisiplinan dan apresiasi kelompok',
       penanggungJawab: 'Guru & Wali Kelas',
       waktuPelaksanaan: 'Awal bulan depan',
@@ -110,7 +110,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
     },
     {
       id: 'rtl-4',
-      aspek: 'Asesmen Pembelajaran',
+      aspek: '4. Asesmen',
       tindakLanjut: 'Merancang lembar penilaian diri (self-assessment) pada akhir lingkup materi',
       penanggungJawab: 'Guru Mata Pelajaran',
       waktuPelaksanaan: 'Bulan berjalan',
@@ -118,7 +118,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
     },
     {
       id: 'rtl-5',
-      aspek: 'Pengembangan Profesional Guru',
+      aspek: '5. Pengembangan Profesional Guru',
       tindakLanjut: 'Mengikuti webinar kurikulum merdeka dan berbagi praktik baik di Kombel Sekolah',
       penanggungJawab: 'Guru & Tim Kombel',
       waktuPelaksanaan: 'Semester berjalan',
@@ -170,7 +170,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
   const emptyRTL: PascaRencanaTindakLanjut[] = [
     {
       id: 'rtl-1',
-      aspek: 'Perencanaan (RPM/MA)',
+      aspek: '1. Perencanaan',
       tindakLanjut: '',
       penanggungJawab: 'Guru Mata Pelajaran',
       waktuPelaksanaan: '',
@@ -178,7 +178,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
     },
     {
       id: 'rtl-2',
-      aspek: 'Pelaksanaan Pembelajaran',
+      aspek: '2. Pelaksanaan',
       tindakLanjut: '',
       penanggungJawab: 'Guru Mata Pelajaran',
       waktuPelaksanaan: '',
@@ -186,7 +186,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
     },
     {
       id: 'rtl-3',
-      aspek: 'Pengelolaan Kelas',
+      aspek: '3. Pengelolaan Kelas',
       tindakLanjut: '',
       penanggungJawab: 'Guru & Wali Kelas',
       waktuPelaksanaan: '',
@@ -194,7 +194,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
     },
     {
       id: 'rtl-4',
-      aspek: 'Asesmen Pembelajaran',
+      aspek: '4. Asesmen',
       tindakLanjut: '',
       penanggungJawab: 'Guru Mata Pelajaran',
       waktuPelaksanaan: '',
@@ -202,7 +202,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
     },
     {
       id: 'rtl-5',
-      aspek: 'Pengembangan Profesional Guru',
+      aspek: '5. Pengembangan Profesional Guru',
       tindakLanjut: '',
       penanggungJawab: 'Guru & Tim Kombel',
       waktuPelaksanaan: '',
@@ -210,9 +210,46 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
     },
   ];
 
+  const normalizeRTL = (rtls: PascaRencanaTindakLanjut[] | undefined): PascaRencanaTindakLanjut[] => {
+    const targetAspects = [
+      '1. Perencanaan',
+      '2. Pelaksanaan',
+      '3. Pengelolaan Kelas',
+      '4. Asesmen',
+      '5. Pengembangan Profesional Guru',
+    ];
+
+    if (!rtls || rtls.length === 0) return emptyRTL;
+
+    return targetAspects.map((aspectName, idx) => {
+      const existing = rtls.find((r) => {
+        const a = (r.aspek || '').toLowerCase();
+        if (idx === 0 && (a.includes('perencanaan') || a.startsWith('1.'))) return true;
+        if (idx === 1 && (a.includes('pelaksanaan') || a.startsWith('2.'))) return true;
+        if (idx === 2 && (a.includes('pengelolaan') || a.startsWith('3.'))) return true;
+        if (idx === 3 && (a.includes('asesmen') || a.startsWith('4.'))) return true;
+        if (idx === 4 && (a.includes('profesional') || a.includes('pkb') || a.startsWith('5.'))) return true;
+        return false;
+      }) || rtls[idx];
+
+      if (existing) {
+        return {
+          ...existing,
+          aspek: aspectName,
+        };
+      }
+      return emptyRTL[idx];
+    });
+  };
+
   const [formData, setFormData] = useState<Instrument4PascaObservasi>(() => {
     const existing = instrumen4[selectedTeacherId];
-    if (existing) return existing;
+    if (existing) {
+      return {
+        ...existing,
+        rencanaTindakLanjut: normalizeRTL(existing.rencanaTindakLanjut),
+      };
+    }
 
     return {
       id: `inst4-${selectedTeacherId}`,
@@ -236,7 +273,10 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
   useEffect(() => {
     const existing = instrumen4[selectedTeacherId];
     if (existing) {
-      setFormData(existing);
+      setFormData({
+        ...existing,
+        rencanaTindakLanjut: normalizeRTL(existing.rencanaTindakLanjut),
+      });
     } else {
       setFormData({
         id: `inst4-${selectedTeacherId}`,

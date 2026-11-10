@@ -119,12 +119,12 @@ export const Instrument2View: React.FC<Instrument2ViewProps> = ({
 
   const handleSetAll = (status: boolean) => {
     const newItems: Record<number, { ya: boolean; catatan: string }> = {};
-    for (let i = 1; i <= 20; i++) {
-      newItems[i] = {
+    INSTRUMEN_2_ITEMS.forEach((it) => {
+      newItems[it.id] = {
         ya: status,
-        catatan: formData.items[i]?.catatan || '',
+        catatan: formData.items[it.id]?.catatan || '',
       };
-    }
+    });
     setFormData((prev) => ({ ...prev, items: newItems }));
   };
 
@@ -162,7 +162,7 @@ export const Instrument2View: React.FC<Instrument2ViewProps> = ({
     if (yaItems.length > 0) {
       const topNames = yaItems.slice(0, 3).map((i) => i.nama).join(', ');
       catatanReferensi.push({
-        label: `Berdasarkan Indikator Terpenuhi (${yaItems.length}/20)`,
+        label: `Berdasarkan Indikator Terpenuhi (${yaItems.length}/${scoreResult.max})`,
         text: `Modul Ajar dirancang sangat baik dan memenuhi kriteria esensial kurikulum, terutama pada aspek: ${topNames}. Struktur modul lengkap dan kontekstual.`,
         badge: 'Sesuai Hasil Ya',
       });
@@ -171,7 +171,7 @@ export const Instrument2View: React.FC<Instrument2ViewProps> = ({
     if (scoreResult.percentage >= 85) {
       catatanReferensi.push({
         label: `Predikat Sangat Baik (${scoreResult.percentage}%)`,
-        text: `Secara menyeluruh rancangan Modul Ajar (RPM) berada pada predikat Sangat Baik (${scoreResult.percentage}% ketercapaian). Langkah pembelajaran terstruktur dengan tahapan Memahami, Merefleksi, dan Memuliakan.`,
+        text: `Secara menyeluruh rancangan Modul Ajar (RPM) berada pada predikat Sangat Baik (${scoreResult.percentage}% ketercapaian). Langkah pembelajaran terstruktur dengan tahapan Memahami, Mengaplikasi, Merefleksi, dan Memuliakan.`,
         badge: 'Predikat',
       });
     } else if (scoreResult.percentage >= 70) {
@@ -210,11 +210,11 @@ export const Instrument2View: React.FC<Instrument2ViewProps> = ({
     }
 
     // Rekomendasi spesifik bila item penting tertentu bernilai 'Tidak'
-    if (items[20] && !items[20].ya) {
+    if (items[21] && !items[21].ya) {
       rekomendasiReferensi.push({
-        label: 'Rubrik & LKPD (Item 20)',
+        label: 'Rubrik & LKPD (Item 21)',
         text: 'Lampirkan Lembar Kerja Peserta Didik (LKPD) yang kontekstual beserta rubrik penilaian Kriteria Ketercapaian Tujuan Pembelajaran (KKTP) secara lebih terperinci.',
-        badge: 'Item 20',
+        badge: 'Item 21',
       });
     }
 
@@ -270,7 +270,7 @@ export const Instrument2View: React.FC<Instrument2ViewProps> = ({
 
     if (yaItems.length > 0) {
       const topNames = yaItems.slice(0, 4).map((i) => i.nama).join(', ');
-      autoCatatan = `Rancangan Modul Ajar guru memenuhi ${scoreResult.totalYa} dari 20 kriteria (${scoreResult.percentage}% - Predikat ${scoreResult.predikat}). Keunggulan utama tampak pada pemenuhan aspek: ${topNames}, yang tersusun sistematis dan berpusat pada murid.`;
+      autoCatatan = `Rancangan Modul Ajar guru memenuhi ${scoreResult.totalYa} dari ${scoreResult.max} kriteria (${scoreResult.percentage}% - Predikat ${scoreResult.predikat}). Keunggulan utama tampak pada pemenuhan aspek: ${topNames}, yang tersusun sistematis dan berpusat pada murid.`;
     } else {
       autoCatatan = `Rancangan Modul Ajar telah ditelaah dengan ketercapaian ${scoreResult.percentage}% (Predikat ${scoreResult.predikat}). Kerangka umum modul telah disusun oleh guru.`;
     }
@@ -472,7 +472,7 @@ export const Instrument2View: React.FC<Instrument2ViewProps> = ({
       <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
         <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <h3 className="font-bold text-slate-900 text-sm md:text-base">
-            Daftar Indikator Telaah Modul Ajar / RPM (20 Indikator)
+            Daftar Indikator Telaah Modul Ajar / RPM ({INSTRUMEN_2_ITEMS.length} Indikator)
           </h3>
           <span className="text-xs font-mono text-slate-500">Standar Kurikulum Merdeka</span>
         </div>
@@ -572,7 +572,7 @@ export const Instrument2View: React.FC<Instrument2ViewProps> = ({
               <span>CATATAN TEMUAN & REKOMENDASI MODUL AJAR</span>
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              Referensi temuan dan saran rekomendasi mengacu secara otomatis pada pemenuhan 20 indikator Modul Ajar (RPM)
+              Referensi temuan dan saran rekomendasi mengacu secara otomatis pada pemenuhan {INSTRUMEN_2_ITEMS.length} indikator Modul Ajar (RPM)
             </p>
           </div>
 
