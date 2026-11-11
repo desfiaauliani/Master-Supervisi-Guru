@@ -275,6 +275,10 @@ export default function App() {
               selectedTeacherId={selectedTeacherId}
               onSelectTeacher={setSelectedTeacherId}
               onSaveInstrument={handleSaveInstrument1}
+              onNavigateNext={() => {
+                setCurrentTab('instrumen-2');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
             />
           )}
 
@@ -284,6 +288,10 @@ export default function App() {
               selectedTeacherId={selectedTeacherId}
               onSelectTeacher={setSelectedTeacherId}
               onSaveInstrument={handleSaveInstrument2}
+              onNavigateNext={() => {
+                setCurrentTab('instrumen-3');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
             />
           )}
 
@@ -293,6 +301,10 @@ export default function App() {
               selectedTeacherId={selectedTeacherId}
               onSelectTeacher={setSelectedTeacherId}
               onSaveInstrument={handleSaveInstrument3}
+              onNavigateNext={() => {
+                setCurrentTab('instrumen-4');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
             />
           )}
 
@@ -302,6 +314,10 @@ export default function App() {
               selectedTeacherId={selectedTeacherId}
               onSelectTeacher={setSelectedTeacherId}
               onSaveInstrument={handleSaveInstrument4}
+              onNavigateNext={() => {
+                setCurrentTab('dashboard');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
             />
           )}
 

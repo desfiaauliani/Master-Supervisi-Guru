@@ -20,13 +20,20 @@ import {
   FileCheck2,
   FileText,
   MessageSquare,
+  ArrowRight,
+  AlertCircle,
 } from 'lucide-react';
+import {
+  getAdministrasiReferenceNote,
+  isAutoAdministrasiNote,
+} from '../utils/administrasiReferences';
 
 interface Instrument1ViewProps {
   data: AppSupervisionData;
   selectedTeacherId: string;
   onSelectTeacher: (id: string) => void;
   onSaveInstrument: (record: Instrument1Admin) => void;
+  onNavigateNext?: () => void;
 }
 
 export const Instrument1View: React.FC<Instrument1ViewProps> = ({
@@ -34,6 +41,7 @@ export const Instrument1View: React.FC<Instrument1ViewProps> = ({
   selectedTeacherId,
   onSelectTeacher,
   onSaveInstrument,
+  onNavigateNext,
 }) => {
   const { school, teachers, instrumen1 } = data;
   const currentTeacher = teachers.find((t) => t.id === selectedTeacherId) || teachers[0];
@@ -61,12 +69,17 @@ export const Instrument1View: React.FC<Instrument1ViewProps> = ({
   });
 
   const [savedAlert, setSavedAlert] = useState(false);
+  const [validationAlert, setValidationAlert] = useState<string | null>(null);
+  const [isSavedAndComplete, setIsSavedAndComplete] = useState<boolean>(() => {
+    return !!instrumen1[selectedTeacherId]?.isCompleted;
+  });
 
   // Sync state when teacher selection changes
   useEffect(() => {
     const existing = instrumen1[selectedTeacherId];
     if (existing) {
       setFormData(existing);
+      setIsSavedAndComplete(!!existing.isCompleted);
     } else {
       setFormData({
         id: `inst1-${selectedTeacherId}`,
@@ -83,19 +96,45 @@ export const Instrument1View: React.FC<Instrument1ViewProps> = ({
         isCompleted: false,
         updatedAt: new Date().toISOString(),
       });
+      setIsSavedAndComplete(false);
     }
+    setValidationAlert(null);
   }, [selectedTeacherId, instrumen1]);
 
   const scoreResult = calculateInstrumen1Score(formData.scores);
 
   const handleScoreChange = (itemId: number, score: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      scores: {
+    setFormData((prev) => {
+      const isUnselecting = prev.scores[itemId] === score;
+      const nextScore = isUnselecting ? 0 : score;
+      const newScores = {
         ...prev.scores,
-        [itemId]: prev.scores[itemId] === score ? 0 : score,
-      },
-    }));
+        [itemId]: nextScore,
+      };
+
+      const currentNote = prev.catatanItem[itemId] || '';
+      let nextNote = currentNote;
+
+      if (isUnselecting) {
+        if (isAutoAdministrasiNote(itemId, currentNote)) {
+          nextNote = '';
+        }
+      } else {
+        // Otomatis isi Catatan Pengawas / Rekomendasi Khusus jika masih kosong atau memakai referensi otomatis sebelumnya
+        if (!currentNote.trim() || isAutoAdministrasiNote(itemId, currentNote)) {
+          nextNote = getAdministrasiReferenceNote(itemId, nextScore);
+        }
+      }
+
+      return {
+        ...prev,
+        scores: newScores,
+        catatanItem: {
+          ...prev.catatanItem,
+          [itemId]: nextNote,
+        },
+      };
+    });
   };
 
   const handleCatatanChange = (itemId: number, val: string) => {
@@ -110,10 +149,31 @@ export const Instrument1View: React.FC<Instrument1ViewProps> = ({
 
   const handleQuickFill = (val: number) => {
     const newScores: Record<number, number> = {};
+    const newCatatan: Record<number, string> = { ...formData.catatanItem };
     INSTRUMEN_1_ITEMS.forEach((item) => {
       newScores[item.id] = val;
+      // Isi catatan referensi pengawas otomatis mengacu pada butir administrasi dan skala nilai
+      newCatatan[item.id] = getAdministrasiReferenceNote(item.id, val);
     });
-    setFormData((prev) => ({ ...prev, scores: newScores }));
+    setFormData((prev) => ({
+      ...prev,
+      scores: newScores,
+      catatanItem: newCatatan,
+    }));
+  };
+
+  const handleAutoFillAllCatatan = () => {
+    setFormData((prev) => {
+      const updatedCatatan = { ...prev.catatanItem };
+      INSTRUMEN_1_ITEMS.forEach((item) => {
+        const sc = prev.scores[item.id] || 5;
+        updatedCatatan[item.id] = getAdministrasiReferenceNote(item.id, sc);
+      });
+      return {
+        ...prev,
+        catatanItem: updatedCatatan,
+      };
+    });
   };
 
   // Fungsi cerdas: Membuat referensi kontekstual berdasarkan skor riil indikator yang dinilai
@@ -284,16 +344,47 @@ export const Instrument1View: React.FC<Instrument1ViewProps> = ({
       tanggapanGuru: '',
       isCompleted: false,
     }));
+    setIsSavedAndComplete(false);
+  };
+
+  const checkCompletion = () => {
+    const unratedItems = INSTRUMEN_1_ITEMS.filter((item) => !formData.scores[item.id] || formData.scores[item.id] === 0);
+    const errors: string[] = [];
+
+    if (unratedItems.length > 0) {
+      errors.push(`Masih ada ${unratedItems.length} butir dokumen yang belum diberi nilai (1-5).`);
+    }
+    if (!formData.catatanTemuan?.trim()) {
+      errors.push('Catatan Temuan / Kelebihan belum diisi.');
+    }
+    if (!formData.rekomendasi?.trim()) {
+      errors.push('Rekomendasi Tindak Lanjut belum diisi.');
+    }
+
+    return {
+      isComplete: errors.length === 0,
+      errors,
+    };
   };
 
   const handleSave = () => {
+    const validation = checkCompletion();
+    if (!validation.isComplete) {
+      setValidationAlert(validation.errors.join(' '));
+      setSavedAlert(false);
+      setTimeout(() => setValidationAlert(null), 5000);
+      return;
+    }
+
     const updated: Instrument1Admin = {
       ...formData,
       isCompleted: true,
       updatedAt: new Date().toISOString(),
     };
     onSaveInstrument(updated);
+    setValidationAlert(null);
     setSavedAlert(true);
+    setIsSavedAndComplete(true);
     setTimeout(() => setSavedAlert(false), 2500);
   };
 
@@ -305,7 +396,18 @@ export const Instrument1View: React.FC<Instrument1ViewProps> = ({
           <CheckCircle className="w-5 h-5 text-white shrink-0" />
           <div>
             <p className="font-bold text-sm">Berhasil Simpan Berkas</p>
-            <p className="text-[11px] text-emerald-100">Instrumen 1 untuk {currentTeacher.namaGuru} tersimpan</p>
+            <p className="text-[11px] text-emerald-100">Instrumen 1 untuk {currentTeacher.namaGuru} tersimpan lengkap</p>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notifikasi Isian Belum Lengkap */}
+      {validationAlert && (
+        <div className="fixed bottom-6 right-6 z-50 print:hidden animate-bounce flex items-start gap-2.5 bg-rose-600 text-white px-4 py-3 rounded-xl shadow-xl border border-rose-400 max-w-md">
+          <AlertCircle className="w-5 h-5 text-white shrink-0 mt-0.5" />
+          <div>
+            <p className="font-bold text-sm">Isian Belum Lengkap!</p>
+            <p className="text-xs text-rose-100 mt-0.5">{validationAlert}</p>
           </div>
         </div>
       )}
@@ -358,6 +460,15 @@ export const Instrument1View: React.FC<Instrument1ViewProps> = ({
             >
               Kosongkan Nilai
             </button>
+            <button
+              type="button"
+              onClick={handleAutoFillAllCatatan}
+              className="px-2.5 py-1 text-xs font-bold rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors flex items-center gap-1 shadow-2xs"
+              title="Isi otomatis seluruh Catatan Pengawas / Rekomendasi Khusus mengacu pada butir administrasi & skala nilai"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+              <span>Isi Otomatis Catatan Butir</span>
+            </button>
           </div>
 
           <div className="flex items-center gap-2">
@@ -372,6 +483,19 @@ export const Instrument1View: React.FC<Instrument1ViewProps> = ({
             >
               <Save className="w-4 h-4" />
               <span>Simpan Instrumen</span>
+            </button>
+            <button
+              disabled={!isSavedAndComplete}
+              onClick={onNavigateNext}
+              className={`px-4 py-2 rounded-lg text-xs md:text-sm font-bold flex items-center gap-1.5 transition-all ${
+                isSavedAndComplete
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer'
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
+              }`}
+              title={isSavedAndComplete ? 'Lanjut ke Instrumen 2' : 'Simpan instrumen dengan isian lengkap terlebih dahulu'}
+            >
+              <span>Instrumen Berikutnya</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
             <button
               onClick={() => window.print()}
@@ -524,13 +648,35 @@ export const Instrument1View: React.FC<Instrument1ViewProps> = ({
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <input
-                        type="text"
-                        placeholder="Catatan butir (opsional)..."
-                        value={formData.catatanItem[item.id] || ''}
-                        onChange={(e) => handleCatatanChange(item.id, e.target.value)}
-                        className="w-full px-2.5 py-1.5 text-xs bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-indigo-400 rounded-md focus:outline-hidden"
-                      />
+                      <div className="relative flex items-center">
+                        <input
+                          type="text"
+                          placeholder={
+                            currentScore > 0
+                              ? getAdministrasiReferenceNote(item.id, currentScore)
+                              : 'Pilih skala (1-5) untuk referensi catatan pengawas...'
+                          }
+                          value={formData.catatanItem[item.id] || ''}
+                          onChange={(e) => handleCatatanChange(item.id, e.target.value)}
+                          className="w-full pr-7 px-2.5 py-1.5 text-xs bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-indigo-400 rounded-md focus:outline-hidden transition-colors"
+                          title="Catatan Pengawas / Rekomendasi Khusus terisi otomatis sesuai butir & skala nilai. Bebas diedit."
+                        />
+                        {currentScore > 0 && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleCatatanChange(
+                                item.id,
+                                getAdministrasiReferenceNote(item.id, currentScore)
+                              )
+                            }
+                            title="Isi / Kembalikan ke Rekomendasi Khusus Otomatis"
+                            className="absolute right-1 text-slate-400 hover:text-indigo-600 p-1 rounded hover:bg-slate-100 transition-colors"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
@@ -704,14 +850,47 @@ export const Instrument1View: React.FC<Instrument1ViewProps> = ({
           </div>
         </div>
 
-        <div className="pt-3 flex justify-end print:hidden">
-          <button
-            onClick={handleSave}
-            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs md:text-sm font-semibold shadow-xs flex items-center gap-1.5 transition-colors"
-          >
-            <Save className="w-4 h-4" />
-            <span>Simpan Instrumen 1</span>
-          </button>
+        <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 print:hidden">
+          <div className="text-xs">
+            {validationAlert ? (
+              <span className="flex items-center gap-1.5 text-rose-600 font-bold animate-pulse">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                Isian Belum Lengkap: {validationAlert}
+              </span>
+            ) : !isSavedAndComplete ? (
+              <span className="flex items-center gap-1.5 text-amber-600 font-medium">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                Lengkapi seluruh butir penilaian dan klik "Simpan Instrumen 1" untuk mengaktifkan instrumen berikutnya.
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
+                <CheckCircle className="w-4 h-4 shrink-0" />
+                Instrumen 1 telah tersimpan lengkap. Silakan lanjut ke Instrumen 2.
+              </span>
+            )}
+          </div>
+          <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+            <button
+              onClick={handleSave}
+              className="w-full sm:w-auto px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs md:text-sm font-semibold shadow-xs flex items-center justify-center gap-1.5 transition-colors"
+            >
+              <Save className="w-4 h-4" />
+              <span>Simpan Instrumen 1</span>
+            </button>
+            <button
+              disabled={!isSavedAndComplete}
+              onClick={onNavigateNext}
+              className={`w-full sm:w-auto px-5 py-2.5 rounded-lg text-xs md:text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                isSavedAndComplete
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md cursor-pointer'
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
+              }`}
+              title={isSavedAndComplete ? 'Lanjut ke Instrumen 2' : 'Simpan instrumen dengan isian lengkap terlebih dahulu'}
+            >
+              <span>Instrumen Berikutnya (Instrumen 2)</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 

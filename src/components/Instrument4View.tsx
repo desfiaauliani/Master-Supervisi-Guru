@@ -24,6 +24,9 @@ import {
   Trash2,
   ListTodo,
   FileText,
+  ArrowRight,
+  AlertCircle,
+  BarChart3,
 } from 'lucide-react';
 
 interface Instrument4ViewProps {
@@ -31,6 +34,7 @@ interface Instrument4ViewProps {
   selectedTeacherId: string;
   onSelectTeacher: (id: string) => void;
   onSaveInstrument: (record: Instrument4PascaObservasi) => void;
+  onNavigateNext?: () => void;
 }
 
 export const Instrument4View: React.FC<Instrument4ViewProps> = ({
@@ -38,6 +42,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
   selectedTeacherId,
   onSelectTeacher,
   onSaveInstrument,
+  onNavigateNext,
 }) => {
   const { school, teachers, instrumen4 } = data;
   const currentTeacher = teachers.find((t) => t.id === selectedTeacherId) || teachers[0];
@@ -269,6 +274,10 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
   });
 
   const [savedAlert, setSavedAlert] = useState(false);
+  const [validationAlert, setValidationAlert] = useState<string | null>(null);
+  const [isSavedAndComplete, setIsSavedAndComplete] = useState<boolean>(() => {
+    return !!instrumen4[selectedTeacherId]?.isCompleted;
+  });
 
   useEffect(() => {
     const existing = instrumen4[selectedTeacherId];
@@ -277,6 +286,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
         ...existing,
         rencanaTindakLanjut: normalizeRTL(existing.rencanaTindakLanjut),
       });
+      setIsSavedAndComplete(!!existing.isCompleted);
     } else {
       setFormData({
         id: `inst4-${selectedTeacherId}`,
@@ -293,7 +303,9 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
         isCompleted: false,
         updatedAt: new Date().toISOString(),
       });
+      setIsSavedAndComplete(false);
     }
+    setValidationAlert(null);
   }, [selectedTeacherId, instrumen4]);
 
   const handleClearForm = () => {
@@ -306,6 +318,7 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
       kesepakatanBersama: '',
       isCompleted: false,
     }));
+    setIsSavedAndComplete(false);
   };
 
   const handleRefleksiChange = (field: keyof PascaRefleksiGuru, val: string) => {
@@ -360,14 +373,73 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
     }));
   };
 
+  const checkCompletion = () => {
+    const errors: string[] = [];
+
+    // Validasi Refleksi Guru (Bagian A)
+    const { perasaan, halBaik, tantangan, responMurid, rencanaPerbaikan } = formData.refleksiGuru;
+    if (
+      !perasaan?.trim() ||
+      !halBaik?.trim() ||
+      !tantangan?.trim() ||
+      !responMurid?.trim() ||
+      !rencanaPerbaikan?.trim()
+    ) {
+      errors.push('Pertanyaan Refleksi Guru (Bagian A) belum lengkap diisi.');
+    }
+
+    // Validasi Umpan Balik Supervisor (Bagian B)
+    const emptyUB = formData.umpanBalik.some(
+      (ub) => !ub.kekuatan?.trim() || !ub.areaPengembangan?.trim()
+    );
+    if (emptyUB) {
+      errors.push('Catatan Umpan Balik Supervisor: Kekuatan & Area Pengembangan (Bagian B) belum lengkap diisi.');
+    }
+
+    // Validasi Rencana Tindak Lanjut (Bagian C)
+    if (!formData.rencanaTindakLanjut || formData.rencanaTindakLanjut.length === 0) {
+      errors.push('Tabel Rencana Tindak Lanjut (Bagian C) masih kosong.');
+    } else {
+      const emptyRTL = formData.rencanaTindakLanjut.some(
+        (rtl) => !rtl.tindakLanjut?.trim() || !rtl.waktuPelaksanaan?.trim()
+      );
+      if (emptyRTL) {
+        errors.push('Tabel Rencana Tindak Lanjut: Kolom Kegiatan atau Waktu Pelaksanaan (Bagian C) belum lengkap diisi.');
+      }
+    }
+
+    // Validasi Catatan Penutup & Kesepakatan (Bagian D)
+    if (!formData.catatanSupervisor?.trim()) {
+      errors.push('Catatan Pengawas/Kepala Sekolah (Bagian D) belum diisi.');
+    }
+    if (!formData.kesepakatanBersama?.trim()) {
+      errors.push('Kesepakatan Bersama untuk Supervisi Lanjutan (Bagian D) belum diisi.');
+    }
+
+    return {
+      isComplete: errors.length === 0,
+      errors,
+    };
+  };
+
   const handleSave = () => {
+    const validation = checkCompletion();
+    if (!validation.isComplete) {
+      setValidationAlert(validation.errors.join(' '));
+      setSavedAlert(false);
+      setTimeout(() => setValidationAlert(null), 5000);
+      return;
+    }
+
     const updated: Instrument4PascaObservasi = {
       ...formData,
       isCompleted: true,
       updatedAt: new Date().toISOString(),
     };
     onSaveInstrument(updated);
+    setValidationAlert(null);
     setSavedAlert(true);
+    setIsSavedAndComplete(true);
     setTimeout(() => setSavedAlert(false), 2500);
   };
 
@@ -380,6 +452,17 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
           <div>
             <p className="font-bold text-sm">Berhasil Simpan Berkas</p>
             <p className="text-[11px] text-emerald-100">Instrumen 4 & RTL untuk {currentTeacher.namaGuru} tersimpan</p>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notifikasi Isian Belum Lengkap */}
+      {validationAlert && (
+        <div className="fixed bottom-6 right-6 z-50 print:hidden animate-bounce flex items-start gap-2.5 bg-rose-600 text-white px-4 py-3 rounded-xl shadow-xl border border-rose-400 max-w-md">
+          <AlertCircle className="w-5 h-5 text-white shrink-0 mt-0.5" />
+          <div>
+            <p className="font-bold text-sm">Isian Belum Lengkap!</p>
+            <p className="text-xs text-rose-100 mt-0.5">{validationAlert}</p>
           </div>
         </div>
       )}
@@ -430,6 +513,20 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
             >
               <Save className="w-4 h-4" />
               <span>Simpan Instrumen</span>
+            </button>
+            <button
+              disabled={!isSavedAndComplete}
+              onClick={onNavigateNext}
+              className={`px-4 py-2 rounded-lg text-xs md:text-sm font-bold flex items-center gap-1.5 transition-all ${
+                isSavedAndComplete
+                  ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-xs cursor-pointer'
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
+              }`}
+              title={isSavedAndComplete ? 'Lanjut ke Rekapitulasi & Analisis' : 'Simpan instrumen dengan isian lengkap terlebih dahulu'}
+            >
+              <BarChart3 className="w-4 h-4" />
+              <span>Rekapitulasi & Analisis</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
             <button
               onClick={() => window.print()}
@@ -789,14 +886,43 @@ export const Instrument4View: React.FC<Instrument4ViewProps> = ({
           </div>
         </div>
 
-        <div className="pt-3 flex justify-end print:hidden">
-          <button
-            onClick={handleSave}
-            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs md:text-sm font-semibold shadow-xs flex items-center gap-1.5 transition-colors"
-          >
-            <Save className="w-4 h-4" />
-            <span>Simpan Instrumen 4 & RTL</span>
-          </button>
+        <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100 print:hidden">
+          <div className="text-xs text-slate-500">
+            {!isSavedAndComplete ? (
+              <span className="text-amber-600 flex items-center gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5" />
+                Lengkapi seluruh bagian A, B, C, D lalu simpan untuk membuka Rekapitulasi dan Analisis
+              </span>
+            ) : (
+              <span className="text-purple-600 flex items-center gap-1.5 font-medium">
+                <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                Instrumen 4 & RTL telah lengkap & tersimpan. Silakan lanjut ke Rekapitulasi dan Analisis.
+              </span>
+            )}
+          </div>
+          <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+            <button
+              onClick={handleSave}
+              className="w-full sm:w-auto px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs md:text-sm font-semibold shadow-xs flex items-center justify-center gap-1.5 transition-colors"
+            >
+              <Save className="w-4 h-4" />
+              <span>Simpan Instrumen 4 & RTL</span>
+            </button>
+            <button
+              disabled={!isSavedAndComplete}
+              onClick={onNavigateNext}
+              className={`w-full sm:w-auto px-5 py-2.5 rounded-lg text-xs md:text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                isSavedAndComplete
+                  ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-md cursor-pointer'
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
+              }`}
+              title={isSavedAndComplete ? 'Lanjut ke Rekapitulasi & Analisis' : 'Simpan instrumen dengan isian lengkap terlebih dahulu'}
+            >
+              <BarChart3 className="w-4 h-4" />
+              <span>Rekapitulasi dan Analisis</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 

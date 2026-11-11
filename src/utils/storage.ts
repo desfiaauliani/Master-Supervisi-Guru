@@ -52,6 +52,8 @@ export const INITIAL_TEACHERS: Teacher[] = [
   },
 ];
 
+import { getAdministrasiReferenceNote } from './administrasiReferences';
+
 // Helper to generate sample Instrument 1
 function createSampleInst1(teacherId: string, baseScore: number): Instrument1Admin {
   const scores: Record<number, number> = {};
@@ -60,9 +62,8 @@ function createSampleInst1(teacherId: string, baseScore: number): Instrument1Adm
     // vary slightly around baseScore (between 3 and 5)
     const offset = (i % 5 === 0) ? -1 : (i % 7 === 0) ? 0 : 0;
     scores[i] = Math.max(3, Math.min(5, baseScore + offset));
+    catatanItem[i] = getAdministrasiReferenceNote(i, scores[i]);
   }
-  catatanItem[4] = 'Hasil asesmen diagnostik gaya belajar telah dimanfaatkan untuk pembagian kelompok diferensiasi.';
-  catatanItem[11] = 'Jurnal harian terisi rapi dengan rekap refleksi pertemuan mingguan.';
 
   return {
     id: `inst1-${teacherId}`,
@@ -81,14 +82,16 @@ function createSampleInst1(teacherId: string, baseScore: number): Instrument1Adm
   };
 }
 
+import { getModulAjarReferenceNote } from './modulAjarReferences';
+
 // Helper to generate sample Instrument 2
-function createSampleInst2(teacherId: string, yaCount: number = 19): Instrument2ModulAjar {
+function createSampleInst2(teacherId: string, yaCount: number = 20): Instrument2ModulAjar {
   const items: Record<number, { ya: boolean; catatan: string }> = {};
-  for (let i = 1; i <= 20; i++) {
+  for (let i = 1; i <= 21; i++) {
     const isYa = i <= yaCount;
     items[i] = {
       ya: isYa,
-      catatan: isYa ? 'Lengkap dan terintegrasi dengan baik' : 'Perlu penambahan rubrik penilaian alternatif',
+      catatan: getModulAjarReferenceNote(i, isYa),
     };
   }
 
@@ -108,15 +111,16 @@ function createSampleInst2(teacherId: string, yaCount: number = 19): Instrument2
   };
 }
 
+import { getObservasiReferenceNote } from './observasiReferences';
+
 // Helper to generate sample Instrument 3
 function createSampleInst3(teacherId: string, baseScore: number = 4): Instrument3Observasi {
   const scores: Record<number, number> = {};
   const catatanPerIndikator: Record<number, string> = {};
-  for (let i = 1; i <= 22; i++) {
-    scores[i] = (i === 8 || i === 15) ? Math.max(3, baseScore - 1) : baseScore;
+  for (let i = 1; i <= 24; i++) {
+    scores[i] = (i === 8 || i === 15 || i === 20) ? Math.max(3, baseScore - 1) : baseScore;
+    catatanPerIndikator[i] = getObservasiReferenceNote(i, scores[i]);
   }
-  catatanPerIndikator[1] = 'Apersepsi menghidupkan rasa ingin tahu siswa lewat video studi kasus aktual.';
-  catatanPerIndikator[4] = 'Diskusi kelompok sangat aktif, siswa saling memberi argumentasi dengan santun.';
 
   return {
     id: `inst3-${teacherId}`,
