@@ -25,6 +25,7 @@ import {
   getObservasiReferenceNote,
   isAutoReferenceNote,
 } from '../utils/observasiReferences';
+import { PrintModal } from './PrintModal';
 
 interface Instrument3ViewProps {
   data: AppSupervisionData;
@@ -81,6 +82,16 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
   const [isSavedAndComplete, setIsSavedAndComplete] = useState<boolean>(() => {
     return !!instrumen3[selectedTeacherId]?.isCompleted;
   });
+  const [showPrintModal, setShowPrintModal] = useState(false);
+  const [isPrintBlank, setIsPrintBlank] = useState(false);
+
+  const handleTriggerPrint = (isBlank: boolean) => {
+    setIsPrintBlank(isBlank);
+    setShowPrintModal(false);
+    setTimeout(() => {
+      window.print();
+    }, 150);
+  };
 
   useEffect(() => {
     const existing = instrumen3[selectedTeacherId];
@@ -601,11 +612,12 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
-              onClick={() => window.print()}
-              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs md:text-sm font-semibold flex items-center gap-1.5 transition-colors"
+              onClick={() => setShowPrintModal(true)}
+              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs md:text-sm font-semibold flex items-center gap-1.5 transition-colors shadow-2xs hover:shadow-xs"
+              title="Cetak dokumen terisi atau blangko kosong dalam format PDF"
             >
               <Printer className="w-4 h-4 text-sky-400" />
-              <span>Cetak Form</span>
+              <span>Cetak Form (PDF)</span>
             </button>
           </div>
         </div>
@@ -623,52 +635,52 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-xs md:text-sm">
-          <div className="flex justify-between py-1 border-b border-slate-100">
-            <span className="font-semibold text-slate-600">1. Nama Satuan Pendidikan</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2.5 text-sm md:text-base">
+          <div className="flex justify-between py-1.5 border-b border-slate-100">
+            <span className="font-semibold text-slate-700">1. Nama Satuan Pendidikan</span>
             <span className="font-bold text-slate-900">{school.namaSekolah}</span>
           </div>
-          <div className="flex justify-between py-1 border-b border-slate-100">
-            <span className="font-semibold text-slate-600">2. Nama Guru yang Diobservasi</span>
+          <div className="flex justify-between py-1.5 border-b border-slate-100">
+            <span className="font-semibold text-slate-700">2. Nama Guru yang Diobservasi</span>
             <span className="font-bold text-slate-900">{currentTeacher.namaGuru}</span>
           </div>
-          <div className="flex justify-between py-1 border-b border-slate-100">
-            <span className="font-semibold text-slate-600">3. Mata Pelajaran</span>
+          <div className="flex justify-between py-1.5 border-b border-slate-100">
+            <span className="font-semibold text-slate-700">3. Mata Pelajaran</span>
             <span className="font-bold text-indigo-700">{currentTeacher.mataPelajaran}</span>
           </div>
-          <div className="flex justify-between py-1 border-b border-slate-100">
-            <span className="font-semibold text-slate-600">4. Kelas / Fase</span>
+          <div className="flex justify-between py-1.5 border-b border-slate-100">
+            <span className="font-semibold text-slate-700">4. Kelas / Fase</span>
             <span className="text-slate-900">{currentTeacher.kelasFase}</span>
           </div>
-          <div className="flex justify-between py-1 border-b border-slate-100">
-            <span className="font-semibold text-slate-600">5. Hari / Tanggal Observasi</span>
+          <div className="flex justify-between py-1.5 border-b border-slate-100">
+            <span className="font-semibold text-slate-700">5. Hari / Tanggal Observasi</span>
             <div className="flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-slate-400 print:hidden" />
               <input
                 type="date"
                 value={formData.tanggalObservasi}
                 onChange={(e) => setFormData({ ...formData, tanggalObservasi: e.target.value })}
-                className="font-medium text-slate-900 bg-transparent border-0 p-0 focus:ring-0 text-xs md:text-sm"
+                className="font-medium text-slate-900 bg-transparent border-0 p-0 focus:ring-0 text-sm md:text-base"
               />
             </div>
           </div>
-          <div className="flex justify-between py-1 border-b border-slate-100">
-            <span className="font-semibold text-slate-600">6. Jam / Waktu Pelaksanaan</span>
+          <div className="flex justify-between py-1.5 border-b border-slate-100">
+            <span className="font-semibold text-slate-700">6. Jam / Waktu Pelaksanaan</span>
             <input
               type="text"
               value={formData.jamKe}
               onChange={(e) => setFormData({ ...formData, jamKe: e.target.value })}
-              className="text-right font-medium text-slate-900 bg-transparent border-0 p-0 focus:ring-0 text-xs md:text-sm"
+              className="text-right font-medium text-slate-900 bg-transparent border-0 p-0 focus:ring-0 text-sm md:text-base"
               placeholder="Contoh: Jam 08.00 - 09.30"
             />
           </div>
-          <div className="md:col-span-2 flex flex-col md:flex-row md:justify-between py-1 border-b border-slate-100 gap-1">
-            <span className="font-semibold text-slate-600">7. Materi Pokok / Topik Pembelajaran:</span>
+          <div className="md:col-span-2 flex flex-col md:flex-row md:justify-between py-1.5 border-b border-slate-100 gap-1">
+            <span className="font-semibold text-slate-700">7. Materi Pokok / Topik Pembelajaran:</span>
             <input
               type="text"
               value={formData.materiPokok}
               onChange={(e) => setFormData({ ...formData, materiPokok: e.target.value })}
-              className="font-semibold text-slate-900 bg-transparent border-0 p-0 focus:ring-0 text-xs md:text-sm flex-1 md:text-right"
+              className="font-semibold text-slate-900 bg-transparent border-0 p-0 focus:ring-0 text-sm md:text-base flex-1 md:text-right"
               placeholder="Tuliskan topik / materi pokok yang diajarkan..."
             />
           </div>
@@ -677,8 +689,8 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
         {/* Scoring Guide Banner */}
         <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base shadow-sm ${scoreResult.total > 0 ? 'bg-purple-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
-              {scoreResult.grade}
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base shadow-sm ${scoreResult.total > 0 && !isPrintBlank ? 'bg-purple-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
+              {isPrintBlank ? '-' : scoreResult.grade}
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -686,18 +698,20 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
                   Hasil Observasi Kelas:
                 </span>
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${scoreResult.badgeColor}`}>
-                  {scoreResult.predikat}
+                  {isPrintBlank ? 'Blangko Observasi' : scoreResult.predikat}
                 </span>
               </div>
-              <p className="text-sm font-extrabold text-slate-900">
-                {scoreResult.total > 0
+              <p className="text-sm md:text-base font-extrabold text-slate-900">
+                {isPrintBlank
+                  ? 'Blangko Lembar Observasi (Siap Diisi Manual)'
+                  : scoreResult.total > 0
                   ? `Total Skor: ${scoreResult.total} / ${scoreResult.max} (${scoreResult.percentage}%)`
                   : 'Total Skor: Belum Diisi / Nilai Kosong'}
               </p>
             </div>
           </div>
 
-          <div className="text-[11px] text-slate-600 font-medium space-x-2">
+          <div className="text-xs text-slate-600 font-medium space-x-2">
             <span className="font-bold text-slate-800">Petunjuk Skor:</span>
             <span className="px-1.5 py-0.5 rounded bg-rose-100 text-rose-800">1 = Tidak Tampak</span>
             <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">2 = Kurang</span>
@@ -746,13 +760,13 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
                   </div>
 
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs border-collapse">
+                    <table className="w-full text-left text-xs md:text-sm border-collapse">
                       <thead>
-                        <tr className="bg-slate-50 text-slate-600 border-b border-slate-200 font-semibold uppercase text-[10px]">
-                          <th className="py-2 px-2 text-center w-8">No</th>
-                          <th className="py-2 px-3 min-w-[260px]">Fokus Indikator & Deskripsi</th>
-                          <th className="py-2 px-2 text-center w-36">Skala Nilai (1-4)</th>
-                          <th className="py-2 px-3 min-w-[200px]">Catatan Pengamat</th>
+                        <tr className="bg-slate-50 text-slate-700 border-b border-slate-200 font-bold uppercase text-xs md:text-sm">
+                          <th className="py-2.5 px-2 text-center w-8">No</th>
+                          <th className="py-2.5 px-3 min-w-[260px]">Fokus Indikator & Deskripsi</th>
+                          <th className="py-2.5 px-2 text-center w-36">Skala Nilai (1-4)</th>
+                          <th className="py-2.5 px-3 min-w-[200px]">Catatan Pengamat</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -760,7 +774,7 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
                           <React.Fragment key={subSec.title}>
                             {/* Sub-section Header Divider Row */}
                             <tr className="bg-sky-50/70 border-y border-sky-100">
-                              <td colSpan={4} className="py-2 px-3 font-bold text-sky-900 text-xs">
+                              <td colSpan={4} className="py-2 px-3 font-bold text-sky-900 text-xs md:text-sm">
                                 <div className="flex items-center gap-2">
                                   <span className="w-2 h-2 rounded-full bg-sky-500"></span>
                                   <span>{subSec.title}</span>
@@ -772,24 +786,24 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
                               const curScore = formData.scores[item.id] || 0;
                               return (
                                 <tr key={item.id} className="hover:bg-slate-50/50">
-                                  <td className="py-2.5 px-2 text-center font-bold text-slate-500 align-top">
+                                  <td className="py-2.5 px-2 text-center font-bold text-slate-500 align-top text-xs md:text-sm">
                                     {item.id}
                                   </td>
                                   <td className="py-2.5 px-3 align-top">
                                     {item.highlightHeader && (
-                                      <div className="bg-[#fce4d6] text-amber-950 font-bold px-2 py-0.5 rounded text-xs inline-block mb-1 border border-orange-200">
+                                      <div className="bg-[#fce4d6] text-amber-950 font-bold px-2 py-0.5 rounded text-xs md:text-sm inline-block mb-1 border border-orange-200">
                                         {item.highlightHeader}
                                       </div>
                                     )}
 
                                     {item.id === 9 && (
-                                      <div className="font-bold text-slate-900 mb-1">
+                                      <div className="font-bold text-slate-900 mb-1 text-xs md:text-sm">
                                         Implementasi perencanaan selaras dengan perencanaan pembelajaran:
                                       </div>
                                     )}
 
                                     {((item.id >= 11 && item.id <= 15) || (item.id >= 19 && item.id <= 20)) && (
-                                      <div className="font-bold text-slate-900 leading-snug">
+                                      <div className="font-bold text-slate-900 leading-snug text-xs md:text-sm">
                                         {item.deskripsi}
                                       </div>
                                     )}
@@ -797,7 +811,7 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
                                     {item.subItems && item.subItems.length > 0 && (
                                       <div className="space-y-1 pl-1 mt-0.5">
                                         {item.subItems.map((si, sIdx) => (
-                                          <div key={sIdx} className="flex items-start gap-1.5 text-slate-700 text-xs">
+                                          <div key={sIdx} className="flex items-start gap-1.5 text-slate-700 text-xs md:text-sm">
                                             <span className="font-semibold text-slate-600 shrink-0">{si.label}</span>
                                             <span className="leading-snug">{si.text}</span>
                                           </div>
@@ -806,13 +820,14 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
                                     )}
                                   </td>
                                   <td className="py-2.5 px-2 text-center align-top">
-                                    <div className="inline-flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
+                                    {/* On-screen Score Buttons */}
+                                    <div className="print:hidden inline-flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
                                       {[1, 2, 3, 4].map((v) => (
                                         <button
                                           key={v}
                                           type="button"
                                           onClick={() => handleScoreChange(item.id, v)}
-                                          className={`w-6 h-6 rounded text-xs font-bold transition-all ${
+                                          className={`w-7 h-7 rounded text-xs md:text-sm font-bold transition-all ${
                                             curScore === v
                                               ? v >= 3
                                                 ? 'bg-indigo-600 text-white shadow-xs'
@@ -825,9 +840,27 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
                                         </button>
                                       ))}
                                     </div>
+                                    {/* Print-friendly score */}
+                                    <div className="hidden print:block text-center font-bold text-sm">
+                                      {isPrintBlank ? (
+                                        <div className="flex justify-center gap-1.5 text-xs text-slate-500 font-mono">
+                                          <span>( ) 1</span>
+                                          <span>( ) 2</span>
+                                          <span>( ) 3</span>
+                                          <span>( ) 4</span>
+                                        </div>
+                                      ) : curScore > 0 ? (
+                                        <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-300 font-extrabold text-slate-900 text-sm">
+                                          {curScore}
+                                        </span>
+                                      ) : (
+                                        <span className="text-slate-400 text-xs">-</span>
+                                      )}
+                                    </div>
                                   </td>
                                   <td className="py-2.5 px-3 align-top">
-                                    <div className="relative flex items-center">
+                                    {/* On-screen input */}
+                                    <div className="print:hidden relative flex items-center">
                                       <input
                                         type="text"
                                         placeholder={
@@ -837,7 +870,7 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
                                         }
                                         value={formData.catatanPerIndikator[item.id] || ''}
                                         onChange={(e) => handleCatatanIndikatorChange(item.id, e.target.value)}
-                                        className="w-full pr-7 px-2.5 py-1 text-xs bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-indigo-400 rounded-md focus:outline-hidden transition-colors"
+                                        className="w-full pr-7 px-3 py-1.5 text-xs md:text-sm bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-indigo-400 rounded-md focus:outline-hidden transition-colors"
                                         title="Catatan pengamat terisi otomatis mengacu pada fokus indikator dan petunjuk skor. Bebas disunting."
                                       />
                                       {curScore > 0 && (
@@ -854,6 +887,14 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
                                         >
                                           <Sparkles className="w-3.5 h-3.5" />
                                         </button>
+                                      )}
+                                    </div>
+                                    {/* Print-friendly text / ruled blank line */}
+                                    <div className="hidden print:block text-xs md:text-sm leading-relaxed text-slate-800">
+                                      {isPrintBlank ? (
+                                        <div className="border-b border-dashed border-slate-400 h-6"></div>
+                                      ) : (
+                                        formData.catatanPerIndikator[item.id] || '-'
                                       )}
                                     </div>
                                   </td>
@@ -884,13 +925,13 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
                 </div>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
+                  <table className="w-full text-left text-xs md:text-sm border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 text-slate-600 border-b border-slate-200 font-semibold uppercase text-[10px]">
-                        <th className="py-2 px-2 text-center w-8">No</th>
-                        <th className="py-2 px-3 min-w-[260px]">Fokus Indikator & Deskripsi</th>
-                        <th className="py-2 px-2 text-center w-36">Skala Nilai (1-4)</th>
-                        <th className="py-2 px-3 min-w-[200px]">Catatan Pengamat</th>
+                      <tr className="bg-slate-50 text-slate-700 border-b border-slate-200 font-bold uppercase text-xs md:text-sm">
+                        <th className="py-2.5 px-2 text-center w-8">No</th>
+                        <th className="py-2.5 px-3 min-w-[260px]">Fokus Indikator & Deskripsi</th>
+                        <th className="py-2.5 px-2 text-center w-36">Skala Nilai (1-4)</th>
+                        <th className="py-2.5 px-3 min-w-[200px]">Catatan Pengamat</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -898,19 +939,20 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
                         const curScore = formData.scores[item.id] || 0;
                         return (
                           <tr key={item.id} className="hover:bg-slate-50/50">
-                            <td className="py-2.5 px-2 text-center font-bold text-slate-500">{item.id}</td>
+                            <td className="py-2.5 px-2 text-center font-bold text-slate-500 text-xs md:text-sm">{item.id}</td>
                             <td className="py-2.5 px-3">
-                              <div className="font-bold text-slate-900">{item.nama}</div>
-                              <div className="text-[11px] text-slate-500 leading-snug">{item.deskripsi}</div>
+                              <div className="font-bold text-slate-900 text-sm md:text-base">{item.nama}</div>
+                              <div className="text-xs md:text-sm text-slate-600 mt-0.5 leading-snug">{item.deskripsi}</div>
                             </td>
                             <td className="py-2.5 px-2 text-center">
-                              <div className="inline-flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
+                              {/* On-screen Score Buttons */}
+                              <div className="print:hidden inline-flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
                                 {[1, 2, 3, 4].map((v) => (
                                   <button
                                     key={v}
                                     type="button"
                                     onClick={() => handleScoreChange(item.id, v)}
-                                    className={`w-6 h-6 rounded text-xs font-bold transition-all ${
+                                    className={`w-7 h-7 rounded text-xs md:text-sm font-bold transition-all ${
                                       curScore === v
                                         ? v >= 3
                                           ? 'bg-indigo-600 text-white shadow-xs'
@@ -922,9 +964,27 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
                                   </button>
                                 ))}
                               </div>
+                              {/* Print-friendly score */}
+                              <div className="hidden print:block text-center font-bold text-sm">
+                                {isPrintBlank ? (
+                                  <div className="flex justify-center gap-1.5 text-xs text-slate-500 font-mono">
+                                    <span>( ) 1</span>
+                                    <span>( ) 2</span>
+                                    <span>( ) 3</span>
+                                    <span>( ) 4</span>
+                                  </div>
+                                ) : curScore > 0 ? (
+                                  <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-300 font-extrabold text-slate-900 text-sm">
+                                    {curScore}
+                                  </span>
+                                ) : (
+                                  <span className="text-slate-400 text-xs">-</span>
+                                )}
+                              </div>
                             </td>
                             <td className="py-2.5 px-3">
-                              <div className="relative flex items-center">
+                              {/* On-screen input */}
+                              <div className="print:hidden relative flex items-center">
                                 <input
                                   type="text"
                                   placeholder={
@@ -934,7 +994,7 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
                                   }
                                   value={formData.catatanPerIndikator[item.id] || ''}
                                   onChange={(e) => handleCatatanIndikatorChange(item.id, e.target.value)}
-                                  className="w-full pr-7 px-2.5 py-1 text-xs bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-indigo-400 rounded-md focus:outline-hidden transition-colors"
+                                  className="w-full pr-7 px-3 py-1.5 text-xs md:text-sm bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-indigo-400 rounded-md focus:outline-hidden transition-colors"
                                   title="Catatan pengamat terisi otomatis mengacu pada fokus indikator dan petunjuk skor. Bebas disunting."
                                 />
                                 {curScore > 0 && (
@@ -951,6 +1011,14 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
                                   >
                                     <Sparkles className="w-3.5 h-3.5" />
                                   </button>
+                                )}
+                              </div>
+                              {/* Print-friendly text / ruled blank line */}
+                              <div className="hidden print:block text-xs md:text-sm leading-relaxed text-slate-800">
+                                {isPrintBlank ? (
+                                  <div className="border-b border-dashed border-slate-400 h-6"></div>
+                                ) : (
+                                  formData.catatanPerIndikator[item.id] || '-'
                                 )}
                               </div>
                             </td>
@@ -1040,14 +1108,28 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
               value={formData.catatanSupervisor}
               onChange={(e) => setFormData({ ...formData, catatanSupervisor: e.target.value })}
               placeholder="Catatan menyeluruh mengenai atmosfer pembelajaran dan performa mengajar atau klik referensi di atas..."
-              className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden text-slate-800 leading-relaxed font-normal"
+              className="print:hidden w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden text-slate-800 leading-relaxed font-normal text-xs md:text-sm"
             />
+            {/* Print representation */}
+            <div className="hidden print:block text-xs md:text-sm">
+              {isPrintBlank ? (
+                <div className="space-y-3 pt-1">
+                  <div className="border-b border-dashed border-slate-400 h-5"></div>
+                  <div className="border-b border-dashed border-slate-400 h-5"></div>
+                  <div className="border-b border-dashed border-slate-400 h-5"></div>
+                </div>
+              ) : (
+                <div className="p-3 rounded-lg border border-slate-300 bg-slate-50 text-slate-900 leading-relaxed whitespace-pre-wrap">
+                  {formData.catatanSupervisor || '-'}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Bagian B */}
           <div className="space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-              <label className="block font-semibold text-slate-800">
+              <label className="block font-semibold text-slate-800 text-xs md:text-sm">
                 B. Rekomendasi / Saran Perbaikan:
               </label>
               <span className="text-[11px] text-slate-400 print:hidden italic">
@@ -1095,14 +1177,28 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
               value={formData.rekomendasiPerbaikan}
               onChange={(e) => setFormData({ ...formData, rekomendasiPerbaikan: e.target.value })}
               placeholder="Aspek-aspek teknis atau pedagogis yang perlu diperbaiki pada sesi berikutnya atau klik referensi di atas..."
-              className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden text-slate-800 leading-relaxed font-normal"
+              className="print:hidden w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden text-slate-800 leading-relaxed font-normal text-xs md:text-sm"
             />
+            {/* Print representation */}
+            <div className="hidden print:block text-xs md:text-sm">
+              {isPrintBlank ? (
+                <div className="space-y-3 pt-1">
+                  <div className="border-b border-dashed border-slate-400 h-5"></div>
+                  <div className="border-b border-dashed border-slate-400 h-5"></div>
+                  <div className="border-b border-dashed border-slate-400 h-5"></div>
+                </div>
+              ) : (
+                <div className="p-3 rounded-lg border border-slate-300 bg-slate-50 text-slate-900 leading-relaxed whitespace-pre-wrap">
+                  {formData.rekomendasiPerbaikan || '-'}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Bagian C */}
           <div className="space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-              <label className="block font-semibold text-slate-800">
+              <label className="block font-semibold text-slate-800 text-xs md:text-sm">
                 C. Rencana Tindak Lanjut Awal:
               </label>
               <span className="text-[11px] text-slate-400 print:hidden italic">
@@ -1141,8 +1237,21 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
               value={formData.tindakLanjut}
               onChange={(e) => setFormData({ ...formData, tindakLanjut: e.target.value })}
               placeholder="Tindak lanjut yang akan didiskusikan lebih lanjut pada sesi pasca observasi atau klik referensi di atas..."
-              className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden text-slate-800 leading-relaxed font-normal"
+              className="print:hidden w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden text-slate-800 leading-relaxed font-normal text-xs md:text-sm"
             />
+            {/* Print representation */}
+            <div className="hidden print:block text-xs md:text-sm">
+              {isPrintBlank ? (
+                <div className="space-y-3 pt-1">
+                  <div className="border-b border-dashed border-slate-400 h-5"></div>
+                  <div className="border-b border-dashed border-slate-400 h-5"></div>
+                </div>
+              ) : (
+                <div className="p-3 rounded-lg border border-slate-300 bg-slate-50 text-slate-900 leading-relaxed whitespace-pre-wrap">
+                  {formData.tindakLanjut || '-'}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -1193,11 +1302,22 @@ export const Instrument3View: React.FC<Instrument3ViewProps> = ({
         signedPengawas={formData.ttdPengawas}
         signedKepalaSekolah={formData.ttdKepalaSekolah}
         signedGuru={formData.ttdGuru}
+        isBlankPrint={isPrintBlank}
         onToggleSignature={(role) => {
           if (role === 'pengawas') setFormData((p) => ({ ...p, ttdPengawas: !p.ttdPengawas }));
           if (role === 'kepala') setFormData((p) => ({ ...p, ttdKepalaSekolah: !p.ttdKepalaSekolah }));
           if (role === 'guru') setFormData((p) => ({ ...p, ttdGuru: !p.ttdGuru }));
         }}
+      />
+
+      {/* Print Options Modal */}
+      <PrintModal
+        isOpen={showPrintModal}
+        onClose={() => setShowPrintModal(false)}
+        documentTitle="INSTRUMEN 3: OBSERVASI PELAKSANAAN PEMBELAJARAN"
+        teacherName={currentTeacher.namaGuru}
+        onPrintFilled={() => handleTriggerPrint(false)}
+        onPrintBlank={() => handleTriggerPrint(true)}
       />
     </div>
   );

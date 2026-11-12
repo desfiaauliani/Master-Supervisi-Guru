@@ -1,10 +1,16 @@
 @import "tailwindcss";
 
 @layer base {
+  html {
+    font-size: 16.5px; /* Skala font menengah yang jelas, nyaman, dan ramah dibaca */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     color: #0f172a;
     background-color: #f8fafc;
+    line-height: 1.55;
   }
 }
 
@@ -12,17 +18,36 @@
   html, body {
     background-color: #ffffff !important;
     color: #000000 !important;
-    font-size: 11pt;
+    font-size: 10.5pt !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   @page {
     size: A4 portrait;
-    margin: 1.2cm 1cm 1.2cm 1cm;
+    margin: 1cm 0.8cm 1cm 0.8cm;
   }
   .print\:hidden {
     display: none !important;
   }
   .print\:block {
     display: block !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    page-break-inside: auto !important;
+  }
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  th, td {
+    border: 1px solid #334155 !important;
   }
   .break-inside-avoid {
     break-inside: avoid !important;
